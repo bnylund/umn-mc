@@ -1,0 +1,6 @@
+name: UMN
+description: Plugin for UMN Minecraft Server
+main: dev.chezy.umn.UMN
+author: chez
+version: 0.1
+api-version: 1.13
