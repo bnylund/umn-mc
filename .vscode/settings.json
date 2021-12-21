@@ -1,9 +1,11 @@
 {
     "java.project.sourcePaths": ["src"],
     "java.project.outputPath": "bin",
-    "java.project.referencedLibraries": [
-        "lib/**/*.jar"
-    ],
-    "java.project.exportJar.targetPath": "${workspaceFolder}/${workspaceFolderBasename}.jar"
+    "java.project.referencedLibraries": {
+        "include": [
+            "lib/**/*.jar"
+        ]
+    },
+    "java.project.exportJar.targetPath": "${workspaceFolder}/UMN.jar"
     //"java.project.exportJar.targetPath": "C:/Users/Ben/Desktop/MC DEV/Dev Server/plugins/${workspaceFolderBasename}.jar"
 }

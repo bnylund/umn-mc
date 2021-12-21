@@ -3,4 +3,18 @@ description: Plugin for UMN Minecraft Server
 main: dev.chezy.umn.UMN
 author: chez
 version: 0.1
-api-version: 1.13
+api-version: 1.16
+depend: [SidebarAPI, Essentials]
+commands:
+    verify:
+        description: Verifies a player
+        usage: /verify
+    test:
+        description: things
+        usage: /test
+    recipe:
+        description: Shows recipes from this plugin
+        usage: /recipe
+    beds:
+        description: Shows all of your beds
+        usage: /beds
