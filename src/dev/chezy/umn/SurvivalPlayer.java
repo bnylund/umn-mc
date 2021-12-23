@@ -1,6 +1,5 @@
 package dev.chezy.umn;
 
-import org.bukkit.Location;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Bukkit;
@@ -8,6 +7,7 @@ import java.util.List;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
+import java.util.logging.Level;
 
 public class SurvivalPlayer
 {
@@ -65,14 +65,15 @@ public class SurvivalPlayer
   }
   
   public void saveAllBeds() {
-    UMN.pl.getConfig().set(String.valueOf(this.Uuid.toString()) + ".Beds", null);
-    UMN.pl.getConfig().set(String.valueOf(this.Uuid.toString()) + ".TotalBeds", this.Beds.size());
-    for (int i = 0; i < this.Beds.size(); ++i) {
-      final Bed bed = this.Beds.get(i);
-      UMN.pl.getConfig().set(String.valueOf(this.Uuid.toString()) + ".Beds." + i + ".x", bed.getLocation().getBlockX());
-      UMN.pl.getConfig().set(String.valueOf(this.Uuid.toString()) + ".Beds." + i + ".y", bed.getLocation().getBlockY());
-      UMN.pl.getConfig().set(String.valueOf(this.Uuid.toString()) + ".Beds." + i + ".z", bed.getLocation().getBlockZ());
-      UMN.pl.getConfig().set(String.valueOf(this.Uuid.toString()) + ".Beds." + i + ".world", bed.getLocation().getWorld().getName());
+    UMN.pl.getConfig().set(Uuid.toString() + ".Beds", null);
+    UMN.pl.getConfig().set(Uuid.toString() + ".TotalBeds", Beds.size());
+    for (int i = 0; i < Beds.size(); ++i) {
+      final Bed bed = Beds.get(i);
+      UMN.pl.getConfig().set(Uuid.toString() + ".Beds." + i + ".x", bed.getLocation().getBlockX());
+      UMN.pl.getConfig().set(Uuid.toString() + ".Beds." + i + ".y", bed.getLocation().getBlockY());
+      UMN.pl.getConfig().set(Uuid.toString() + ".Beds." + i + ".z", bed.getLocation().getBlockZ());
+      UMN.pl.getConfig().set(Uuid.toString() + ".Beds." + i + ".world", bed.getLocation().getWorld().getName());
+      UMN.pl.getConfig().set(Uuid.toString() + ".Beds." + i + ".name", bed.getName().length() > 0 ? bed.getName() : ("Bed #" + i));
     }
     UMN.pl.saveConfig();
   }

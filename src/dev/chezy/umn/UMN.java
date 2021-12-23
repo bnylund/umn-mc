@@ -42,7 +42,8 @@ public class UMN extends JavaPlugin implements Listener {
 	public static List<ShapedRecipe> cRecipes;
 	public static String[] recipes = { "item_nametag" };
 	public static List<String> inNametag;
-	public static HashMap<Location, Integer> bedCooldown;
+	public static HashMap<String, Location> inBedRename;
+	public static HashMap<Location, KeyValue<Integer, Integer>> bedCooldown; // K: task_id, V: cooldown secs
 	public static List<Integer> tasks;
   
   public void onEnable() {
@@ -50,7 +51,8 @@ public class UMN extends JavaPlugin implements Listener {
     pm = getServer().getPluginManager();
 		cRecipes = new ArrayList<ShapedRecipe>();
 		inNametag = new ArrayList<String>();
-		bedCooldown = new HashMap<Location, Integer>();
+		inBedRename = new HashMap<String, Location>();
+		bedCooldown = new HashMap<Location, KeyValue<Integer, Integer>>();
 		
 		Bukkit.getLogger().log(Level.INFO, "Registering recipes...");
 		registerRecipes();
@@ -90,6 +92,20 @@ public class UMN extends JavaPlugin implements Listener {
 		}
 
 		updateScoreboard();
+
+		getLogger().log(Level.INFO, "Loading global inventory timer...");
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+			@Override
+			public void run() {
+				for(Player p : Bukkit.getOnlinePlayers()) {
+					// topinv == clickable
+					if(p.getOpenInventory() != null && p.getOpenInventory().getTopInventory() instanceof ClickableInventory) {
+						ClickableInventory ci = (ClickableInventory) p.getOpenInventory().getTopInventory();
+						ci.refresh();
+					}
+				}
+			}
+		}, 0L, 20L);
 
     getLogger().log(Level.INFO, "Loaded UMN Plugin!");
   }
@@ -138,7 +154,10 @@ public class UMN extends JavaPlugin implements Listener {
 			final int y = pl.getConfig().getInt(player.toString() + ".Beds." + i + ".y");
 			final int z = pl.getConfig().getInt(player.toString() + ".Beds." + i + ".z");
 			final String world = pl.getConfig().getString(player.toString() + ".Beds." + i + ".world");
-			beds.add(new Bed(new Location(Bukkit.getWorld(world), (double)x, (double)y, (double)z), player));
+			String name = ChatColor.AQUA + ChatColor.BOLD.toString() + "Bed #" + i;
+			if(pl.getConfig().contains(player.toString() + ".Beds." + i + ".name"))
+				name = pl.getConfig().getString(player.toString() + ".Beds." + i + ".name");
+			beds.add(new Bed(new Location(Bukkit.getWorld(world), (double)x, (double)y, (double)z), player, name));
 		}
 		return beds;
 	}
@@ -152,36 +171,45 @@ public class UMN extends JavaPlugin implements Listener {
 	}
 
 	public static Integer getCooldown(Bed bed) {
-		Object cooldown = bedCooldown.get(new Location(bed.getLocation().getWorld(), bed.getLocation().getBlockX(), bed.getLocation().getBlockY(), bed.getLocation().getBlockZ()));
-		return cooldown == null ? 0 : (Integer) cooldown;
+		KeyValue<Integer, Integer> cooldown = bedCooldown.get(new Location(bed.getLocation().getWorld(), bed.getLocation().getBlockX(), bed.getLocation().getBlockY(), bed.getLocation().getBlockZ()));
+		return cooldown == null ? 0 : cooldown.getValue();
 	}
 
 	public static void setCooldown(Bed bed, Integer seconds) {
 		if(bedCooldown.containsKey(bed.getLocation())) {
-			bedCooldown.replace(bed.getLocation(), seconds);
+			KeyValue<Integer, Integer> cur = bedCooldown.get(bed.getLocation());
+			cur.setValue(cur.getValue()-1);
+			bedCooldown.replace(bed.getLocation(), cur);
 			return;
 		}
 
-		bedCooldown.put(bed.getLocation(), seconds);
-		Bukkit.getScheduler().scheduleSyncRepeatingTask(UMN.pl, new Runnable() {
+		int task = Bukkit.getScheduler().scheduleSyncRepeatingTask(UMN.pl, new Runnable() {
 			@Override
 			public void run() {
 				if(bedCooldown.containsKey(bed.getLocation()) && bed.getLocation().getBlock().getType().toString().contains("BED")) {
-					bedCooldown.replace(bed.getLocation(), bedCooldown.get(bed.getLocation())-1);
-					if(bedCooldown.get(bed.getLocation()) <= 0) {
+					KeyValue<Integer, Integer> cur = bedCooldown.get(bed.getLocation());
+					cur.setValue(cur.getValue()-1);
+					bedCooldown.replace(bed.getLocation(), cur);
+					if(bedCooldown.get(bed.getLocation()).getValue() <= 0) {
 						bedCooldown.remove(bed.getLocation());
+						Bukkit.getScheduler().cancelTask(cur.getKey());
 					}
 					return;
 				}
 			}
 		}, 20, 20);
+		bedCooldown.put(bed.getLocation(), new KeyValue<Integer,Integer>(task, seconds));
 	}
 
 	@EventHandler
 	public void onBlockPlace(final BlockPlaceEvent e) {
 		if (e.getBlock().getType().toString().contains("BED") && e.getBlock().getLocation().getWorld().getEnvironment() == World.Environment.NORMAL) {
 			final SurvivalPlayer pl = new SurvivalPlayer(e.getPlayer());
-			final Bed bed = new Bed(e.getBlock().getLocation(), pl.getUUID());
+			if(pl.getBeds().size() >= 9) {
+				pl.sendMessage("&cYou have reached your bed limit. It will not be saved.");
+				return;
+			}
+			final Bed bed = new Bed(e.getBlock().getLocation(), pl.getUUID(), "");
 			pl.addBed(bed);
 			pl.sendMessage("&6Your bed was saved!");
 		}

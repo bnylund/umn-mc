@@ -57,42 +57,47 @@ public class Commands implements CommandExecutor {
               } else {
                 for(String s : UMN.recipes) 
                   if(args[1].equals(s)) {
-                    ClickableInventory inv = new ClickableInventory(5, ChatColor.GOLD + Listeners.getFormattedName(s) + " Recipe");
-                    ItemStack filler = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
-                    ItemMeta im = filler.getItemMeta();
-                    im.setDisplayName(" ");
-                    filler.setItemMeta(im);
-                    
-                    for(int i = 0; i < inv.getSize(); i++) {
-                      inv.setItem(i, filler);
-                    }
-                    
-                    ShapedRecipe rec = null;
-                    for(ShapedRecipe sr : UMN.cRecipes) if(sr.getKey().getKey().equals(args[1]))  rec = sr;
-                    // "123", "456", "789"
-                    char s1 = ' ', s2 = ' ', s3 = ' ', s4 = ' ', s5 = ' ', s6 = ' ', s7 = ' ', s8 = ' ', s9 = ' ';
-                    try{ s1 = rec.getShape()[0].charAt(0); } catch(Exception ex) {}
-                    try{ s2 = rec.getShape()[0].charAt(1); } catch(Exception ex) {}
-                    try{ s3 = rec.getShape()[0].charAt(2); } catch(Exception ex) {}
-                    try{ s4 = rec.getShape()[1].charAt(0); } catch(Exception ex) {}
-                    try{ s5 = rec.getShape()[1].charAt(1); } catch(Exception ex) {}
-                    try{ s6 = rec.getShape()[1].charAt(2); } catch(Exception ex) {}
-                    try{ s7 = rec.getShape()[2].charAt(0); } catch(Exception ex) {}
-                    try{ s8 = rec.getShape()[2].charAt(1); } catch(Exception ex) {}
-                    try{ s9 = rec.getShape()[2].charAt(2); } catch(Exception ex) {}
-                    
-                    inv.setItem(UMN.locations[0], (rec.getIngredientMap().get(s1) == null ? new ItemStack(Material.AIR) : rec.getIngredientMap().get(s1)));
-                    inv.setItem(UMN.locations[1], (rec.getIngredientMap().get(s2) == null ? new ItemStack(Material.AIR) : rec.getIngredientMap().get(s2)));
-                    inv.setItem(UMN.locations[2], (rec.getIngredientMap().get(s3) == null ? new ItemStack(Material.AIR) : rec.getIngredientMap().get(s3)));
-                    inv.setItem(UMN.locations[3], (rec.getIngredientMap().get(s4) == null ? new ItemStack(Material.AIR) : rec.getIngredientMap().get(s4)));
-                    inv.setItem(UMN.locations[4], (rec.getIngredientMap().get(s5) == null ? new ItemStack(Material.AIR) : rec.getIngredientMap().get(s5)));
-                    inv.setItem(UMN.locations[5], (rec.getIngredientMap().get(s6) == null ? new ItemStack(Material.AIR) : rec.getIngredientMap().get(s6)));
-                    inv.setItem(UMN.locations[6], (rec.getIngredientMap().get(s7) == null ? new ItemStack(Material.AIR) : rec.getIngredientMap().get(s7)));
-                    inv.setItem(UMN.locations[7], (rec.getIngredientMap().get(s8) == null ? new ItemStack(Material.AIR) : rec.getIngredientMap().get(s8)));
-                    inv.setItem(UMN.locations[8], (rec.getIngredientMap().get(s9) == null ? new ItemStack(Material.AIR) : rec.getIngredientMap().get(s9)));
-                    inv.setItem(UMN.locations[9], rec.getResult());
-                    
+                    ClickableInventory inv = new ClickableInventory(5, ChatColor.GOLD + Listeners.getFormattedName(s) + " Recipe") {
+                      @Override
+                      public void refresh() {
+                        this.clear();
+                        ItemStack filler = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
+                        ItemMeta im = filler.getItemMeta();
+                        im.setDisplayName(" ");
+                        filler.setItemMeta(im);
+                        
+                        for(int i = 0; i < this.getSize(); i++) {
+                          this.setItem(i, filler);
+                        }
+                        
+                        ShapedRecipe rec = null;
+                        for(ShapedRecipe sr : UMN.cRecipes) if(sr.getKey().getKey().equals(args[1]))  rec = sr;
+                        // "123", "456", "789"
+                        char s1 = ' ', s2 = ' ', s3 = ' ', s4 = ' ', s5 = ' ', s6 = ' ', s7 = ' ', s8 = ' ', s9 = ' ';
+                        try{ s1 = rec.getShape()[0].charAt(0); } catch(Exception ex) {}
+                        try{ s2 = rec.getShape()[0].charAt(1); } catch(Exception ex) {}
+                        try{ s3 = rec.getShape()[0].charAt(2); } catch(Exception ex) {}
+                        try{ s4 = rec.getShape()[1].charAt(0); } catch(Exception ex) {}
+                        try{ s5 = rec.getShape()[1].charAt(1); } catch(Exception ex) {}
+                        try{ s6 = rec.getShape()[1].charAt(2); } catch(Exception ex) {}
+                        try{ s7 = rec.getShape()[2].charAt(0); } catch(Exception ex) {}
+                        try{ s8 = rec.getShape()[2].charAt(1); } catch(Exception ex) {}
+                        try{ s9 = rec.getShape()[2].charAt(2); } catch(Exception ex) {}
+                        
+                        this.setItem(UMN.locations[0], (rec.getIngredientMap().get(s1) == null ? new ItemStack(Material.AIR) : rec.getIngredientMap().get(s1)));
+                        this.setItem(UMN.locations[1], (rec.getIngredientMap().get(s2) == null ? new ItemStack(Material.AIR) : rec.getIngredientMap().get(s2)));
+                        this.setItem(UMN.locations[2], (rec.getIngredientMap().get(s3) == null ? new ItemStack(Material.AIR) : rec.getIngredientMap().get(s3)));
+                        this.setItem(UMN.locations[3], (rec.getIngredientMap().get(s4) == null ? new ItemStack(Material.AIR) : rec.getIngredientMap().get(s4)));
+                        this.setItem(UMN.locations[4], (rec.getIngredientMap().get(s5) == null ? new ItemStack(Material.AIR) : rec.getIngredientMap().get(s5)));
+                        this.setItem(UMN.locations[5], (rec.getIngredientMap().get(s6) == null ? new ItemStack(Material.AIR) : rec.getIngredientMap().get(s6)));
+                        this.setItem(UMN.locations[6], (rec.getIngredientMap().get(s7) == null ? new ItemStack(Material.AIR) : rec.getIngredientMap().get(s7)));
+                        this.setItem(UMN.locations[7], (rec.getIngredientMap().get(s8) == null ? new ItemStack(Material.AIR) : rec.getIngredientMap().get(s8)));
+                        this.setItem(UMN.locations[8], (rec.getIngredientMap().get(s9) == null ? new ItemStack(Material.AIR) : rec.getIngredientMap().get(s9)));
+                        this.setItem(UMN.locations[9], rec.getResult());
+                      }
+                    };
                     ((Player)cs).openInventory(inv);
+                    inv.refresh();
                   }
               }
             } else if(args[0].equalsIgnoreCase("ingredients")) {

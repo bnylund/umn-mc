@@ -9,7 +9,7 @@ import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftInventoryCustom;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class ClickableInventory extends CraftInventoryCustom {
+public abstract class ClickableInventory extends CraftInventoryCustom {
   public List<Click> clicks;
   
   public ClickableInventory(int rows, String title) {
@@ -40,4 +40,6 @@ public class ClickableInventory extends CraftInventoryCustom {
           c.run(e); 
       }  
   }
+
+  public abstract void refresh();
 }

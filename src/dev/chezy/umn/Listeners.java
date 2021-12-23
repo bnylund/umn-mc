@@ -107,6 +107,21 @@ public class Listeners implements Listener {
 			return;
 		}
 
+		// Check bed rename
+		if(UMN.inBedRename.containsKey(e.getPlayer().getUniqueId().toString())) {
+			SurvivalPlayer p = new SurvivalPlayer(e.getPlayer());
+			for(Bed b : p.getBeds()) {
+				if(UMN.inBedRename.get(e.getPlayer().getUniqueId().toString()).equals(b.getLocation())) {
+					b.setName(e.getMessage());
+					p.saveAllBeds();
+					UMN.inBedRename.remove(e.getPlayer().getUniqueId().toString());
+					e.getPlayer().sendMessage(ChatColor.GREEN + "Name updated!");
+					e.setCancelled(true);
+					return;
+				}
+			}
+		}
+
     String msg = "";
 		if(e.getPlayer().isOp()) {
 			msg += ChatColor.RED.toString() + ChatColor.BOLD.toString() + "MOD ";
