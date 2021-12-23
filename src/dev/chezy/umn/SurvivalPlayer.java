@@ -7,22 +7,20 @@ import java.util.List;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
-import java.util.logging.Level;
 
-public class SurvivalPlayer
-{
+public class SurvivalPlayer {
   private String Name;
   private UUID Uuid;
   private Player _player;
   private List<Bed> Beds;
-  
+
   protected SurvivalPlayer(final Player player) {
     this.Name = player.getName();
     this.Uuid = player.getUniqueId();
     this._player = player;
     this.Beds = UMN.getPlayerBeds(player.getUniqueId());
   }
-  
+
   protected SurvivalPlayer(final UUID player) {
     final OfflinePlayer p = Bukkit.getOfflinePlayer(player);
     this.Name = p.getName();
@@ -30,40 +28,40 @@ public class SurvivalPlayer
     this.Beds = UMN.getPlayerBeds(player);
     try {
       this._player = Bukkit.getPlayer(player);
+    } catch (Exception ex) {
     }
-    catch (Exception ex) {}
   }
-  
+
   public String getName() {
     return this.Name;
   }
-  
+
   public UUID getUUID() {
     return this.Uuid;
   }
-  
+
   public List<Bed> getBeds() {
     return this.Beds;
   }
-  
+
   public void addBed(final Bed bed) {
     this.Beds.add(bed);
     this.saveAllBeds();
   }
-  
+
   public void sendMessage(final String message) {
     this._player.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
   }
-  
+
   public void removeBed(final Bed bed) {
     this.Beds.remove(bed);
     this.saveAllBeds();
   }
-  
+
   public void teleportToBed(final Bed bed) {
     this._player.teleport(bed.getLocation());
   }
-  
+
   public void saveAllBeds() {
     UMN.pl.getConfig().set(Uuid.toString() + ".Beds", null);
     UMN.pl.getConfig().set(Uuid.toString() + ".TotalBeds", Beds.size());
@@ -73,7 +71,8 @@ public class SurvivalPlayer
       UMN.pl.getConfig().set(Uuid.toString() + ".Beds." + i + ".y", bed.getLocation().getBlockY());
       UMN.pl.getConfig().set(Uuid.toString() + ".Beds." + i + ".z", bed.getLocation().getBlockZ());
       UMN.pl.getConfig().set(Uuid.toString() + ".Beds." + i + ".world", bed.getLocation().getWorld().getName());
-      UMN.pl.getConfig().set(Uuid.toString() + ".Beds." + i + ".name", bed.getName().length() > 0 ? bed.getName() : ("Bed #" + i));
+      UMN.pl.getConfig().set(Uuid.toString() + ".Beds." + i + ".name",
+          bed.getName().length() > 0 ? bed.getName() : ("Bed #" + i));
     }
     UMN.pl.saveConfig();
   }
