@@ -1,12 +1,13 @@
 package dev.chezy.umn;
 
+import java.util.List;
+import java.util.ArrayList;
+
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import java.util.List;
 import org.bukkit.ChatColor;
-import java.util.ArrayList;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.command.Command;
@@ -48,13 +49,14 @@ public class BedsCommand implements CommandExecutor {
                 else
                   lore.add(ChatColor.YELLOW + "Left-click to teleport");
                 lore.add(ChatColor.YELLOW + "Right-click to rename");
+                lore.add(ChatColor.YELLOW + "Shift + Right-click to delete");
                 im.setLore(lore);
                 im.setDisplayName(ChatColor.translateAlternateColorCodes('&', bed.getName()));
                 is.setItemMeta(im);
                 final Click click = new Click(is) {
                   @Override
                   public void run(InventoryClickEvent e) {
-                    if (e.getClick().isRightClick()) {
+                    if (e.getClick().isRightClick() && !e.getClick().isShiftClick()) {
                       e.getWhoClicked().closeInventory();
                       e.getWhoClicked().sendMessage(ChatColor.YELLOW + "Enter a new name for your bed:");
                       if (UMN.inBedRename.containsKey(((Player) e.getWhoClicked()).getUniqueId().toString())) {
@@ -81,6 +83,9 @@ public class BedsCommand implements CommandExecutor {
                         e.getWhoClicked().sendMessage(ChatColor.AQUA + "Teleporting to bed...");
                         UMN.setCooldown(bed, 600);
                       }
+                    } else if(e.getClick().isRightClick() && e.getClick().isShiftClick()) {
+                      p.removeBed(bed);
+                      e.getWhoClicked().sendMessage(ChatColor.GREEN + "Bed removed!");
                     }
                   }
                 };
