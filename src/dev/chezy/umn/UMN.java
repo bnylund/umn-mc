@@ -79,7 +79,11 @@ public class UMN extends JavaPlugin implements Listener {
     getCommand("verify").setExecutor(new Commands());
     getCommand("recipe").setExecutor(new Commands());
     getCommand("test").setExecutor(new Commands());
+    getCommand("plugins").setExecutor(new Commands());
+    getCommand("pl").setExecutor(new Commands());
+    getCommand("help").setExecutor(new Commands());
     getCommand("xpbottle").setExecutor(new XPBottle());
+    getCommand("xp").setExecutor(new XPBottle());
 
     if (!pl.getConfig().contains("verified")) {
       pl.getConfig().set("verified", new ArrayList<String>());

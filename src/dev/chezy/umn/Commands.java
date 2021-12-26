@@ -238,6 +238,23 @@ public class Commands implements CommandExecutor {
         } else if (label.equalsIgnoreCase("test") && cs.isOp()) {
           Player p = (Player) cs;
           p.getInventory().addItem(CustomItem.getNametag());
+        } else if (label.equalsIgnoreCase("help")) {
+          cs.sendMessage(" ");
+          cs.sendMessage(ChatColor.RED + "  UMN Rocket League - Help");
+          cs.sendMessage(" ");
+          cs.sendMessage(ChatColor.DARK_GREEN + "/recipe show all " + ChatColor.YELLOW + "Shows all of the custom registered recipes");
+          cs.sendMessage(ChatColor.DARK_GREEN + "/recipe show <recipe> " + ChatColor.YELLOW + "Graphically shows the specified recipe");
+          cs.sendMessage(ChatColor.DARK_GREEN + "/recipe ingredients <recipe> " + ChatColor.YELLOW + "Dumps the ingredients needed to craft the recipe");
+          cs.sendMessage(ChatColor.DARK_GREEN + "/xp " + ChatColor.YELLOW + "Shows your current exp");
+          cs.sendMessage(ChatColor.DARK_GREEN + "/xpbottle <amount> " + ChatColor.YELLOW + "Extracts exp from your player into a bottle");
+          cs.sendMessage(ChatColor.DARK_GREEN + "/beds " + ChatColor.YELLOW + "Lists all beds you have placed");
+          cs.sendMessage(ChatColor.DARK_GREEN + "/tpa <player> " + ChatColor.YELLOW + "Sends a teleport request to a player");
+          cs.sendMessage(ChatColor.DARK_GREEN + "/tpaccept " + ChatColor.YELLOW + "Accepts the last teleport request");
+          cs.sendMessage(ChatColor.DARK_GREEN + "/tpdeny " + ChatColor.YELLOW + "Denies the last teleport request");
+          cs.sendMessage(ChatColor.DARK_GREEN + "/msg <player> <message> " + ChatColor.YELLOW + "Sends a message to another player");
+          cs.sendMessage(ChatColor.DARK_GREEN + "/r <message> " + ChatColor.YELLOW + "Replies to the last player that sent a message to you");
+        } else if(!cs.isOp() && (label.equalsIgnoreCase("plugins") || label.equalsIgnoreCase("pl"))) {
+          cs.sendMessage(ChatColor.RED + "You don't have access to that command.");
         }
       }
     }

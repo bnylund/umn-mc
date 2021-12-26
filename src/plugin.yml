@@ -8,16 +8,26 @@ depend: [SidebarAPI, Essentials]
 commands:
     verify:
         description: Verifies a player
-        usage: /verify
+        usage: /<command>
     test:
         description: things
-        usage: /test
+        usage: /<command>
     recipe:
         description: Shows recipes from this plugin
-        usage: /recipe
+        usage: /<command>
     beds:
         description: Shows all of your beds
-        usage: /beds
+        usage: /<command>
     xpbottle:
         description: Extracts XP from your player
-        usage: /xpbottle
+        usage: /<command>
+    xp:
+        description: Shows your current XP
+        usage: /<command>
+    help:
+        description: Shows server help page
+        usage: /<command>
+    plugins:
+        description: Shows enabled plugins
+        usage: /<command>
+        aliases: [pl]

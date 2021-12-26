@@ -64,14 +64,14 @@ public class XPBottle implements CommandExecutor, Listener {
 
   @Override
   public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
+    DecimalFormat df = new DecimalFormat("##,###");
     if (label.equalsIgnoreCase("xpbottle") && cs instanceof Player) {
       Player p = (Player) cs;
       int xp = SetExpFix.getTotalExperience(p);
-      DecimalFormat df = new DecimalFormat("##,###");
 
       if (args.length == 0) {
         p.sendMessage(
-            ChatColor.GOLD + "You have " + ChatColor.RED.toString() + xp + ChatColor.GOLD.toString() + " exp.");
+            ChatColor.RED + "Usage: /xpbottle <amount>");
         return true;
       }
 
@@ -110,6 +110,9 @@ public class XPBottle implements CommandExecutor, Listener {
       } else {
         p.sendMessage(ChatColor.RED + "XP amount can't be negative.");
       }
+    } else if(label.equalsIgnoreCase("xp") && cs instanceof Player) {
+      Player p = (Player) cs;
+      p.sendMessage(ChatColor.GOLD + "You have " + ChatColor.RED.toString() + df.format(SetExpFix.getTotalExperience(p)) + ChatColor.GOLD + " exp (level " + ChatColor.RED.toString() + p.getLevel() + ChatColor.GOLD.toString() + ")");
     }
     return true;
   }
