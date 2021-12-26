@@ -25,4 +25,17 @@ public class CustomItem {
     is.setItemMeta(im);
     return is;
   }
+
+  public static ItemStack getXPBottle(int amount, String author) {
+    ItemStack is = new ItemStack(Material.EXPERIENCE_BOTTLE, 1);
+    ItemMeta im = is.getItemMeta();
+    im.setDisplayName(ChatColor.GREEN + "Experience Bottle " + ChatColor.RESET.toString()
+        + ChatColor.GRAY.toString() + "(Throw)");
+    List<String> lore = new ArrayList<String>();
+    lore.add(ChatColor.LIGHT_PURPLE + "Value " + ChatColor.WHITE + amount + " XP");
+    lore.add(ChatColor.LIGHT_PURPLE + "Enchanter " + ChatColor.WHITE + author);
+    im.setLore(lore);
+    is.setItemMeta(im);
+    return is;
+  }
 }

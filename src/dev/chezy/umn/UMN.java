@@ -44,7 +44,7 @@ public class UMN extends JavaPlugin implements Listener {
   public static List<String> inNametag;
   public static HashMap<String, Location> inBedRename;
   public static HashMap<Location, KeyValue<Integer, Integer>> bedCooldown; // K: task_id, V: cooldown secs
-  public static List<Integer> tasks;
+  public static HashMap<String, Integer> xpCooldown;
 
   public void onEnable() {
     pl = this;
@@ -53,6 +53,7 @@ public class UMN extends JavaPlugin implements Listener {
     inNametag = new ArrayList<String>();
     inBedRename = new HashMap<String, Location>();
     bedCooldown = new HashMap<Location, KeyValue<Integer, Integer>>();
+    xpCooldown = new HashMap<String, Integer>();
 
     Bukkit.getLogger().log(Level.INFO, "Registering recipes...");
     registerRecipes();
@@ -72,11 +73,13 @@ public class UMN extends JavaPlugin implements Listener {
     }
 
     pm.registerEvents(new Listeners(), this);
+    pm.registerEvents(new XPBottle(), this);
     pm.registerEvents(this, this);
     getCommand("beds").setExecutor(new BedsCommand());
     getCommand("verify").setExecutor(new Commands());
     getCommand("recipe").setExecutor(new Commands());
     getCommand("test").setExecutor(new Commands());
+    getCommand("xpbottle").setExecutor(new XPBottle());
 
     if (!pl.getConfig().contains("verified")) {
       pl.getConfig().set("verified", new ArrayList<String>());
@@ -93,15 +96,22 @@ public class UMN extends JavaPlugin implements Listener {
 
     updateScoreboard();
 
-    getLogger().log(Level.INFO, "Loading global inventory timer...");
+    getLogger().log(Level.INFO, "Loading global timer...");
     Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
       @Override
       public void run() {
+        // Clickable Inventory Refresh
         for (Player p : Bukkit.getOnlinePlayers()) {
-          // topinv == clickable
           if (p.getOpenInventory() != null && p.getOpenInventory().getTopInventory() instanceof ClickableInventory) {
             ClickableInventory ci = (ClickableInventory) p.getOpenInventory().getTopInventory();
             ci.refresh();
+          }
+        }
+
+        // XP Cooldown
+        for(OfflinePlayer p : Bukkit.getOfflinePlayers()) {
+          if(xpCooldown.containsKey(p.getUniqueId().toString())) {
+            xpCooldown.replace(p.getUniqueId().toString(), xpCooldown.get(p.getUniqueId().toString()) - 1);
           }
         }
       }
@@ -134,17 +144,19 @@ public class UMN extends JavaPlugin implements Listener {
   }
 
   public static void updateScoreboard() {
-    main.setEntries(new ArrayList<SidebarString>());
-    main.addEmpty();
+    List<SidebarString> entries = new ArrayList<SidebarString>();
+    entries.add(new SidebarString(new String(new char[entries.size()]).replace("\0", " ")));
     for (OfflinePlayer p : Bukkit.getOfflinePlayers()) {
       if (p.isOnline())
-        main.addEntry(new SidebarString(ChatColor.GREEN + p.getName()));
+        entries.add(new SidebarString(ChatColor.GREEN + p.getName()));
     }
     for (OfflinePlayer p : Bukkit.getOfflinePlayers()) {
       if (!p.isOnline())
-        main.addEntry(new SidebarString(ChatColor.RED + p.getName()));
+        entries.add(new SidebarString(ChatColor.RED + p.getName()));
     }
-    main.addEmpty();
+    entries.add(new SidebarString(new String(new char[entries.size()]).replace("\0", " ")));
+    entries.add(new SidebarString(ChatColor.RED + "UMN Rocket League"));
+    main.setEntries(entries);
   }
 
   public static List<Bed> getPlayerBeds(final UUID player) {
