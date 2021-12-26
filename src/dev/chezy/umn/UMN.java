@@ -23,7 +23,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
@@ -220,7 +220,7 @@ public class UMN extends JavaPlugin implements Listener {
     bedCooldown.put(bed.getLocation(), new KeyValue<Integer, Integer>(task, seconds));
   }
 
-  @EventHandler
+  /*@EventHandler
   public void onBlockPlace(final BlockPlaceEvent e) {
     if (e.getBlock().getType().toString().contains("BED")
         && e.getBlock().getLocation().getWorld().getEnvironment() == World.Environment.NORMAL) {
@@ -232,6 +232,28 @@ public class UMN extends JavaPlugin implements Listener {
       final Bed bed = new Bed(e.getBlock().getLocation(), pl.getUUID(), "");
       pl.addBed(bed);
       pl.sendMessage("&6Your bed was saved!");
+    }
+  }*/
+
+  @EventHandler
+  public void onBedEnter(final PlayerBedEnterEvent e) {
+    if(e.getBed().getLocation().getWorld().getEnvironment() == World.Environment.NORMAL) {
+      final SurvivalPlayer pl = new SurvivalPlayer(e.getPlayer());
+      boolean hasBed = false;
+      for(Bed b : pl.getBeds()) {
+        if(b.getLocation().distance(e.getBed().getLocation()) < 3) {
+          hasBed = true;
+        }
+      }
+      if(!hasBed) {
+        if (pl.getBeds().size() >= 9) {
+          pl.sendMessage("&cYou have reached your bed limit. This bed will not be saved.");
+          return;
+        }
+        final Bed bed = new Bed(e.getBed().getLocation(), pl.getUUID(), "");
+        pl.addBed(bed);
+        pl.sendMessage("&aBed saved!");
+      }
     }
   }
 
@@ -246,7 +268,7 @@ public class UMN extends JavaPlugin implements Listener {
               && e.getBlock().getLocation().getBlockZ() == location.getBlockZ()
               && e.getBlock().getWorld().getName() == location.getWorld().getName()) {
             p.removeBed(bed);
-            p.sendMessage("&6One of your beds was destroyed! Location: " + location.getBlockX() + "x "
+            p.sendMessage("&cOne of your beds was destroyed! Location: " + location.getBlockX() + "x "
                 + location.getBlockY() + "y " + location.getBlockZ() + "z");
             return;
           } else {
@@ -263,7 +285,7 @@ public class UMN extends JavaPlugin implements Listener {
               continue;
             }
             p.removeBed(bed);
-            p.sendMessage("&6One of your beds was destroyed! Location: " + location.getBlockX() + "x "
+            p.sendMessage("&cOne of your beds was destroyed! Location: " + location.getBlockX() + "x "
                 + location.getBlockY() + "y " + location.getBlockZ() + "z");
             return;
           }
