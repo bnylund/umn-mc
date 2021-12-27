@@ -138,10 +138,11 @@ public class Listeners implements Listener {
     String msg = "";
     if (e.getPlayer().isOp()) {
       msg += ChatColor.RED.toString() + ChatColor.BOLD.toString() + "MOD ";
-    }
-    if (UMN.pl.getConfig().contains("verified")) {
-      if (UMN.pl.getConfig().getStringList("verified").contains(e.getPlayer().getUniqueId().toString())) {
-        msg += ChatColor.GREEN.toString() + ChatColor.BOLD.toString() + "VERIFIED ";
+    } else {
+      if (UMN.pl.getConfig().contains("verified")) {
+        if (UMN.pl.getConfig().getStringList("verified").contains(e.getPlayer().getUniqueId().toString())) {
+          msg += ChatColor.GREEN.toString() + ChatColor.BOLD.toString() + "VERIFIED ";
+        }
       }
     }
     msg += ChatColor.AQUA.toString() + e.getPlayer().getName() + ChatColor.WHITE.toString() + ": "

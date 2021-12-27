@@ -1,6 +1,7 @@
 package dev.chezy.umn;
 
 import java.text.DecimalFormat;
+import java.util.HashMap;
 
 import com.earth2me.essentials.craftbukkit.SetExpFix;
 
@@ -93,16 +94,16 @@ public class XPBottle implements CommandExecutor, Listener {
       }
       if (amount > 0) {
         if (xp >= amount) {
-          if (p.getInventory().firstEmpty() == -1) {
+          ItemStack bottle = CustomItem.getXPBottle(amount, p.getDisplayName());
+          HashMap<Integer, ItemStack> noFit = p.getInventory().addItem(bottle);
+          if(noFit.size() > 0) {
             p.sendMessage(ChatColor.RED + "Your inventory is full!");
             return true;
           }
-          ItemStack bottle = CustomItem.getXPBottle(amount, p.getDisplayName());
           SetExpFix.setTotalExperience(p, xp - amount);
           p.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "- " + df.format(amount) + "XP");
-          p.getInventory().addItem(bottle);
 
-          UMN.xpCooldown.put(p.getUniqueId().toString(), 600); // 10min cooldown
+          UMN.xpCooldown.put(p.getUniqueId().toString(), 60); // 10min cooldown
         } else {
           p.sendMessage(ChatColor.RED + "You don't have that much XP! You have " + ChatColor.GOLD.toString() + xp
               + ChatColor.RED.toString() + " exp.");
