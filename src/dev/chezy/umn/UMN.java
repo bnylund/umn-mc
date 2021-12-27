@@ -116,6 +116,10 @@ public class UMN extends JavaPlugin implements Listener {
         for(OfflinePlayer p : Bukkit.getOfflinePlayers()) {
           if(xpCooldown.containsKey(p.getUniqueId().toString())) {
             xpCooldown.replace(p.getUniqueId().toString(), xpCooldown.get(p.getUniqueId().toString()) - 1);
+
+            if(xpCooldown.get(p.getUniqueId().toString()) <= 0) {
+              xpCooldown.remove(p.getUniqueId().toString());
+            }
           }
         }
       }
