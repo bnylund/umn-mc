@@ -16,6 +16,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
@@ -69,7 +70,8 @@ public class UMN extends JavaPlugin implements Listener {
         }
         pl.getConfig().set("KnownPlayers", players);
       }
-      pl.getConfig().set(p.getUniqueId().toString() + ".name", p.getName());
+      if(!pl.getConfig().contains(p.getUniqueId().toString() + ".name"))
+        pl.getConfig().set(p.getUniqueId().toString() + ".name", p.getName());
     }
 
     pm.registerEvents(new Listeners(), this);
@@ -90,6 +92,15 @@ public class UMN extends JavaPlugin implements Listener {
     }
 
     pl.saveConfig();
+
+    for(final Player p : Bukkit.getOnlinePlayers()) {
+      p.setDisplayName(pl.getConfig().getString(p.getUniqueId().toString() + ".name"));
+      p.setPlayerListHeaderFooter(ChatColor.RED + ChatColor.BOLD.toString() + "UMN SMP",
+          ChatColor.YELLOW + "https://discord.gg/eGXCYytxEw");
+      p.setPlayerListName(p.isOp()
+              ? ChatColor.RED + ChatColor.BOLD.toString() + "MOD " + ChatColor.RESET.toString() + p.getDisplayName()
+              : ChatColor.RESET.toString() + p.getDisplayName());
+    }
 
     getLogger().log(Level.INFO, "Loading scoreboard...");
     main = new Sidebar(ChatColor.LIGHT_PURPLE + ChatColor.BOLD.toString() + "     Players     ", (Plugin) this, 20,
@@ -154,13 +165,12 @@ public class UMN extends JavaPlugin implements Listener {
   public static void updateScoreboard() {
     List<SidebarString> entries = new ArrayList<SidebarString>();
     entries.add(new SidebarString(new String(new char[entries.size()]).replace("\0", " ")));
-    for (OfflinePlayer p : Bukkit.getOfflinePlayers()) {
-      if (p.isOnline())
-        entries.add(new SidebarString(ChatColor.GREEN + p.getName()));
+    for (Player p : Bukkit.getOnlinePlayers()) {
+      entries.add(new SidebarString(ChatColor.GREEN + p.getDisplayName()));
     }
     for (OfflinePlayer p : Bukkit.getOfflinePlayers()) {
       if (!p.isOnline())
-        entries.add(new SidebarString(ChatColor.RED + p.getName()));
+        entries.add(new SidebarString(ChatColor.RED + (pl.getConfig().contains(p.getUniqueId().toString() + ".name") ? pl.getConfig().getString(p.getUniqueId().toString() + ".name") : p.getName())));
     }
     entries.add(new SidebarString(new String(new char[entries.size()]).replace("\0", " ")));
     entries.add(new SidebarString(ChatColor.RED + "UMN Rocket League"));
@@ -274,7 +284,6 @@ public class UMN extends JavaPlugin implements Listener {
             p.removeBed(bed);
             p.sendMessage("&cOne of your beds was destroyed! Location: " + location.getBlockX() + "x "
                 + location.getBlockY() + "y " + location.getBlockZ() + "z");
-            return;
           } else {
             final BlockData state = e.getBlock().getBlockData();
             if (!(state instanceof org.bukkit.block.data.type.Bed)) {
@@ -291,7 +300,6 @@ public class UMN extends JavaPlugin implements Listener {
             p.removeBed(bed);
             p.sendMessage("&cOne of your beds was destroyed! Location: " + location.getBlockX() + "x "
                 + location.getBlockY() + "y " + location.getBlockZ() + "z");
-            return;
           }
         }
       }
@@ -300,8 +308,6 @@ public class UMN extends JavaPlugin implements Listener {
 
   @EventHandler
   public void onPlayerJoin(PlayerJoinEvent e) {
-    main.showTo(e.getPlayer());
-    updateScoreboard();
     if (!pl.getConfig().contains("KnownPlayers")) {
       pl.getConfig().set("KnownPlayers", new String[] { e.getPlayer().getUniqueId().toString() });
     } else {
@@ -311,9 +317,26 @@ public class UMN extends JavaPlugin implements Listener {
       }
       pl.getConfig().set("KnownPlayers", players);
     }
-    pl.getConfig().set(e.getPlayer().getUniqueId().toString() + ".name", e.getPlayer().getName());
+    if(!pl.getConfig().contains(e.getPlayer().getUniqueId().toString() + ".name"))
+      pl.getConfig().set(e.getPlayer().getUniqueId().toString() + ".name", e.getPlayer().getName());
     pl.saveConfig();
+    e.getPlayer().setDisplayName(pl.getConfig().getString(e.getPlayer().getUniqueId().toString()  + ".name"));
     e.getPlayer().setGameMode(GameMode.SURVIVAL);
+    e.getPlayer().setFlying(false);
+    
+    for (Player p : Bukkit.getOnlinePlayers())
+      p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 200.0F, 100.0F);
+    e.setJoinMessage(ChatColor.GOLD + e.getPlayer().getDisplayName().toString() + ChatColor.RED.toString() + " just joined.");
+    e.getPlayer().setPlayerListHeaderFooter(ChatColor.RED + ChatColor.BOLD.toString() + "UMN SMP",
+        ChatColor.YELLOW + "https://discord.gg/eGXCYytxEw");
+    e.getPlayer()
+        .setPlayerListName(e.getPlayer().isOp()
+            ? ChatColor.RED + ChatColor.BOLD.toString() + "MOD " + ChatColor.RESET.toString() + e.getPlayer().getDisplayName()
+            : ChatColor.RESET.toString() + e.getPlayer().getDisplayName());
+    e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',
+        "&4[&c&l!&4] &cThere are no land protection features on this server! Build at your own risk."));
+    main.showTo(e.getPlayer());
+    updateScoreboard();
   }
 
   @EventHandler
@@ -324,5 +347,9 @@ public class UMN extends JavaPlugin implements Listener {
         updateScoreboard();
       }
     }, 30L);
+    for (Player p : Bukkit.getOnlinePlayers())
+      p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 200.0F, 100.0F);
+    e.setQuitMessage(
+        ChatColor.GOLD + e.getPlayer().getDisplayName().toString() + ChatColor.RED.toString() + " just disconnected.");
   }
 }

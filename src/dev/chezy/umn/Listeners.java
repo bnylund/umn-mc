@@ -6,7 +6,6 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -15,8 +14,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -62,34 +59,11 @@ public class Listeners implements Listener {
     Player p = e.getAffected().getBase();
     if (e.getValue())
       p.setPlayerListName(
-          ChatColor.GOLD + ChatColor.BOLD.toString() + "AFK " + ChatColor.RESET.toString() + p.getName());
+          ChatColor.GOLD + ChatColor.BOLD.toString() + "AFK " + ChatColor.RESET.toString() + p.getDisplayName());
     else
       p.setPlayerListName(
-          p.isOp() ? ChatColor.RED + ChatColor.BOLD.toString() + "MOD " + ChatColor.RESET.toString() + p.getName()
+          p.isOp() ? ChatColor.RED + ChatColor.BOLD.toString() + "MOD " + ChatColor.RESET.toString() + p.getDisplayName()
               : ChatColor.RESET.toString() + p.getName());
-  }
-
-  @EventHandler
-  public void onJoin(PlayerJoinEvent e) {
-    for (Player p : Bukkit.getOnlinePlayers())
-      p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 200.0F, 100.0F);
-    e.setJoinMessage(ChatColor.GOLD + e.getPlayer().getName().toString() + ChatColor.RED.toString() + " just joined.");
-    e.getPlayer().setPlayerListHeaderFooter(ChatColor.RED + ChatColor.BOLD.toString() + "UMN SMP",
-        ChatColor.YELLOW + "https://discord.gg/eGXCYytxEw");
-    e.getPlayer()
-        .setPlayerListName(e.getPlayer().isOp()
-            ? ChatColor.RED + ChatColor.BOLD.toString() + "MOD " + ChatColor.RESET.toString() + e.getPlayer().getName()
-            : ChatColor.RESET.toString() + e.getPlayer().getName());
-    e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',
-        "&4[&c&l!&4] &cThere are no land protection features on this server! Build at your own risk."));
-  }
-
-  @EventHandler
-  public void onLeave(PlayerQuitEvent e) {
-    for (Player p : Bukkit.getOnlinePlayers())
-      p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 200.0F, 100.0F);
-    e.setQuitMessage(
-        ChatColor.GOLD + e.getPlayer().getName().toString() + ChatColor.RED.toString() + " just disconnected.");
   }
 
   @EventHandler
@@ -145,7 +119,7 @@ public class Listeners implements Listener {
         }
       }
     }
-    msg += ChatColor.AQUA.toString() + e.getPlayer().getName() + ChatColor.WHITE.toString() + ": "
+    msg += ChatColor.AQUA.toString() + e.getPlayer().getDisplayName() + ChatColor.WHITE.toString() + ": "
         + ChatColor.translateAlternateColorCodes('&', e.getMessage());
 
     // Check for [item]. If present, replace with hover tooltip of current item.

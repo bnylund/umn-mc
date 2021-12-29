@@ -2,11 +2,15 @@ package dev.chezy.umn;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
+import com.james090500.APIManager.UserInfo;
 
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -23,13 +27,32 @@ public class Commands implements CommandExecutor {
           cs.sendMessage("Please specify a player.");
           return true;
         }
-        Player p = Bukkit.getPlayer(args[0]);
+        OfflinePlayer p = Bukkit.getOfflinePlayer(UUID.fromString(UserInfo.getParsedUUID(args[0])));
         if (p != null && p.getUniqueId() != null) {
           List<String> verified = UMN.pl.getConfig().getStringList("verified");
-          verified.add(p.getUniqueId().toString());
+          if (!verified.contains(p.getUniqueId().toString()))
+            verified.add(p.getUniqueId().toString());
           UMN.pl.getConfig().set("verified", verified);
+
+          if (args.length >= 2) {
+            String name = args[1];
+            if (UMN.pl.getConfig().contains(p.getUniqueId().toString())) {
+              UMN.pl.getConfig().set(p.getUniqueId().toString() + ".name", name);
+            }
+            if (p.isOnline()) {
+              Player pl = (Player) p;
+              pl.setDisplayName(name);
+              pl.setPlayerListHeaderFooter(ChatColor.RED + ChatColor.BOLD.toString() + "UMN SMP",
+                  ChatColor.YELLOW + "https://discord.gg/eGXCYytxEw");
+              pl.setPlayerListName(p.isOp()
+                  ? ChatColor.RED + ChatColor.BOLD.toString() + "MOD " + ChatColor.RESET.toString() + pl.getDisplayName()
+                  : ChatColor.RESET.toString() + pl.getDisplayName());
+            }
+          }
+
           UMN.pl.saveConfig();
           cs.sendMessage("Verified " + args[0] + " - " + p.getUniqueId().toString());
+          UMN.updateScoreboard();
         } else {
           cs.sendMessage("player null");
         }
@@ -242,18 +265,25 @@ public class Commands implements CommandExecutor {
           cs.sendMessage(" ");
           cs.sendMessage(ChatColor.RED + "  UMN Rocket League - Help");
           cs.sendMessage(" ");
-          cs.sendMessage(ChatColor.DARK_GREEN + "/recipe show all " + ChatColor.YELLOW + "Shows all of the custom registered recipes");
-          cs.sendMessage(ChatColor.DARK_GREEN + "/recipe show <recipe> " + ChatColor.YELLOW + "Graphically shows the specified recipe");
-          cs.sendMessage(ChatColor.DARK_GREEN + "/recipe ingredients <recipe> " + ChatColor.YELLOW + "Dumps the ingredients needed to craft the recipe");
+          cs.sendMessage(ChatColor.DARK_GREEN + "/recipe show all " + ChatColor.YELLOW
+              + "Shows all of the custom registered recipes");
+          cs.sendMessage(ChatColor.DARK_GREEN + "/recipe show <recipe> " + ChatColor.YELLOW
+              + "Graphically shows the specified recipe");
+          cs.sendMessage(ChatColor.DARK_GREEN + "/recipe ingredients <recipe> " + ChatColor.YELLOW
+              + "Dumps the ingredients needed to craft the recipe");
           cs.sendMessage(ChatColor.DARK_GREEN + "/xp " + ChatColor.YELLOW + "Shows your current exp");
-          cs.sendMessage(ChatColor.DARK_GREEN + "/xpbottle <amount> " + ChatColor.YELLOW + "Extracts exp from your player into a bottle");
+          cs.sendMessage(ChatColor.DARK_GREEN + "/xpbottle <amount> " + ChatColor.YELLOW
+              + "Extracts exp from your player into a bottle");
           cs.sendMessage(ChatColor.DARK_GREEN + "/beds " + ChatColor.YELLOW + "Lists all beds you have placed");
-          cs.sendMessage(ChatColor.DARK_GREEN + "/tpa <player> " + ChatColor.YELLOW + "Sends a teleport request to a player");
+          cs.sendMessage(
+              ChatColor.DARK_GREEN + "/tpa <player> " + ChatColor.YELLOW + "Sends a teleport request to a player");
           cs.sendMessage(ChatColor.DARK_GREEN + "/tpaccept " + ChatColor.YELLOW + "Accepts the last teleport request");
           cs.sendMessage(ChatColor.DARK_GREEN + "/tpdeny " + ChatColor.YELLOW + "Denies the last teleport request");
-          cs.sendMessage(ChatColor.DARK_GREEN + "/msg <player> <message> " + ChatColor.YELLOW + "Sends a message to another player");
-          cs.sendMessage(ChatColor.DARK_GREEN + "/r <message> " + ChatColor.YELLOW + "Replies to the last player that sent a message to you");
-        } else if(!cs.isOp() && (label.equalsIgnoreCase("plugins") || label.equalsIgnoreCase("pl"))) {
+          cs.sendMessage(ChatColor.DARK_GREEN + "/msg <player> <message> " + ChatColor.YELLOW
+              + "Sends a message to another player");
+          cs.sendMessage(ChatColor.DARK_GREEN + "/r <message> " + ChatColor.YELLOW
+              + "Replies to the last player that sent a message to you");
+        } else if (!cs.isOp() && (label.equalsIgnoreCase("plugins") || label.equalsIgnoreCase("pl"))) {
           cs.sendMessage(ChatColor.RED + "You don't have access to that command.");
         }
       }

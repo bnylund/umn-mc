@@ -4,7 +4,7 @@ main: dev.chezy.umn.UMN
 author: chez
 version: 0.1
 api-version: 1.16
-depend: [SidebarAPI, Essentials]
+depend: [SidebarAPI, Essentials, JamesAPIManager]
 commands:
     verify:
         description: Verifies a player

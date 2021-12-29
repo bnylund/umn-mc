@@ -103,7 +103,7 @@ public class XPBottle implements CommandExecutor, Listener {
           SetExpFix.setTotalExperience(p, xp - amount);
           p.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "- " + df.format(amount) + "XP");
 
-          UMN.xpCooldown.put(p.getUniqueId().toString(), 60); // 10min cooldown
+          UMN.xpCooldown.put(p.getUniqueId().toString(), 60); // 1 minute cooldown
         } else {
           p.sendMessage(ChatColor.RED + "You don't have that much XP! You have " + ChatColor.GOLD.toString() + xp
               + ChatColor.RED.toString() + " exp.");
